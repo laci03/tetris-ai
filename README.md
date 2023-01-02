@@ -14,3 +14,8 @@ source venv/bin/activate
 
 <b>Step 2:</b> Install the needed packages:
 ```pip install -r requirements.txt```
+
+
+## How to run plain tetris
+
+```python tetris.py```

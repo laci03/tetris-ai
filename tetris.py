@@ -32,12 +32,12 @@ class Block:
     y = 0
     n = 0
 
-    def __init__(self, x, y, n):
+    def __init__(self, x, y, n, rotation=0):
         self.x = x
         self.y = y
         self.type = n
         self.color = n + 1
-        self.rotation = random.randint(0, len(shapes[n]) - 1)
+        self.rotation = rotation # random.randint(0, len(shapes[n]) - 1)
 
     def image(self):
         return shapes[self.type][self.rotation]
@@ -159,9 +159,6 @@ class Tetris:
             self.block.rotation = old_rotation
 
 
-pygame.font.init()
-
-
 def startGame():
     done = False
     clock = pygame.time.Clock()
@@ -245,19 +242,22 @@ def startGame():
         clock.tick(fps)
 
 
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Tetris by DataFlair")
-run = True
-while run:
-    screen.fill((16, 57, 34))
-    font = pygame.font.SysFont("Calibri", 70, bold=True)
-    label = font.render("Press any key to begin!", True, '#FFFFFF')
+if __name__ == '__main__':
+    pygame.font.init()
 
-    screen.blit(label, (10, 300))
-    pygame.display.update()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == pygame.KEYDOWN:
-            startGame()
-pygame.quit()
+    screen = pygame.display.set_mode((width, height))
+    pygame.display.set_caption("Tetris by DataFlair")
+    run = True
+    while run:
+        screen.fill((16, 57, 34))
+        font = pygame.font.SysFont("Calibri", 70, bold=True)
+        label = font.render("Press any key to begin!", True, '#FFFFFF')
+
+        screen.blit(label, (10, 300))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                startGame()
+    pygame.quit()

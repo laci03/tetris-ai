@@ -2,6 +2,8 @@
 import pygame
 import random
 
+from genetic_tetris import GeneticTetris
+
 # Shapes of the blocks
 shapes = [
     [[1, 5, 9, 13], [4, 5, 6, 7]],
@@ -75,6 +77,10 @@ class Tetris:
 
     def next_block(self):
         self.nextBlock = Block(3, 0, random.randint(0, len(shapes) - 1))
+
+        next_move = GeneticTetris(self).next_move()
+        self.block.x = next_move[0]
+        self.block.rotation = next_move[1]
 
     # Checks if the blocks touch the top of the board
     def intersects(self):
@@ -239,7 +245,7 @@ def startGame():
         game.draw_next_block(screen)
 
         pygame.display.flip()
-        clock.tick(fps)
+        clock.tick(100000)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import copy
+import heuristics
 
 # Shapes of the blocks
 shapes = [
@@ -49,7 +50,7 @@ class GeneticTetris:
                     self.tetris.nextBlock.rotation = next_rotation
                     next_tetris_x_min, next_tetris_x_max = self.get_tetris_min_max(self.tetris.nextBlock)
 
-                    for next_tetris_x in range(next_tetris_x_min, next_tetris_x_max+1, 1):
+                    for next_tetris_x in range(next_tetris_x_min, next_tetris_x_max + 1, 1):
                         self.tetris.field = copy.deepcopy(next_field)
                         possibilities += 1
 
@@ -61,7 +62,14 @@ class GeneticTetris:
                         self.generate_field()
 
                         current_field = self.tetris.field
-                        current_fitness = 0     # majd itt lesz kiszamitva a terkep fitnessje
+
+                        heuristics_weight = [-1.5, 5.9, 0, 0, 0, 0]
+                        current_fitness = heuristics.max_height(current_field) * heuristics_weight[0] + \
+                                          heuristics.cleared_rows(current_field) * heuristics_weight[1] + \
+                                          heuristics.aggregate_height(current_field) * heuristics_weight[1] + \
+                                          heuristics.avg_height(current_field) * heuristics_weight[1] + \
+                                          heuristics.number_of_holes(current_field) * heuristics_weight[1] + \
+                                          heuristics.bumpiness(current_field) * heuristics_weight[1]
 
                         all_fields.append(((tetris_x, rotation), copy.deepcopy(self.tetris.field), current_fitness))
 
@@ -80,7 +88,7 @@ class GeneticTetris:
                     self.tetris.field[i + self.tetris.block.y][j + self.tetris.block.x] = self.tetris.block.color
 
     @staticmethod
-    def pprint_map(field):    # for debugging purposes only
+    def pprint_map(field):  # for debugging purposes only
         for f in field:
             print(f)
 

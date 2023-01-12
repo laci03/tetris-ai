@@ -63,13 +63,13 @@ class GeneticTetris:
 
                         current_field = self.tetris.field
 
-                        heuristics_weight = [-1.5, 5.9, 0, 0, 0, 0]
+                        heuristics_weight = [-3, 5.9, 0, -3, -3, -2.8]
                         current_fitness = heuristics.max_height(current_field) * heuristics_weight[0] + \
                                           heuristics.cleared_rows(current_field) * heuristics_weight[1] + \
-                                          heuristics.aggregate_height(current_field) * heuristics_weight[1] + \
-                                          heuristics.avg_height(current_field) * heuristics_weight[1] + \
-                                          heuristics.number_of_holes(current_field) * heuristics_weight[1] + \
-                                          heuristics.bumpiness(current_field) * heuristics_weight[1]
+                                          heuristics.aggregate_height(current_field) * heuristics_weight[2] + \
+                                          heuristics.avg_height(current_field) * heuristics_weight[3] + \
+                                          heuristics.number_of_holes(current_field) * heuristics_weight[4] + \
+                                          heuristics.bumpiness(current_field) * heuristics_weight[5]
 
                         all_fields.append(((tetris_x, rotation), copy.deepcopy(self.tetris.field), current_fitness))
 

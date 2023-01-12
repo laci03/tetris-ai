@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def cleared_rows(field):
     '''
         returns the number of rows that will be cleared in this field
@@ -28,13 +31,40 @@ def aggregate_height(field):
 
 
 def avg_height(field):
-    return 0
+    max_heights = [len(field) for _ in range(len(field[0]))]
+    ones = [False for _ in range(len(field[0]))]
+
+    for row in field:
+        for i, col in enumerate(row):
+            if col != 0:
+                ones[i] = True
+            if not ones[i]:
+                max_heights[i] = max_heights[i] - 1
+    return np.mean(max_heights)
 
 
 def number_of_holes(field):
-    return 0
+    holes = 0
+    ones = [False for _ in range(len(field[0]))]
+
+    for row in field:
+        for i, col in enumerate(row):
+            if col != 0:
+                ones[i] = True
+            if col == 0 and ones[i]:
+                holes += 1
+    return holes
 
 
 def bumpiness(field):
-    return 0
+    bumps = 0
+    zeros = [False for _ in range(len(field[0]))]
+
+    for row in field[::-1]:
+        for i, col in enumerate(row):
+            if col == 0:
+                zeros[i] = True
+            if col != 0 and zeros[i]:
+                bumps += 1
+    return bumps
 

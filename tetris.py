@@ -4,7 +4,6 @@ import random
 
 from genetic_tetris import GeneticTetris
 
-heuristics_weight = [-3, 5.9, -3, -3, -2.8]
 # Shapes of the blocks
 shapes = [
     [[1, 5, 9, 13], [4, 5, 6, 7]],
@@ -60,7 +59,7 @@ class Tetris:
     nextBlock = None
 
     # Sets the properties of the board
-    def __init__(self, height, width):
+    def __init__(self, height, width, heuristics_weight=None):
         self.height = height
         self.width = width
         self.score = 0
@@ -72,6 +71,8 @@ class Tetris:
                 new_line.append(0)
             self.field.append(new_line)
 
+        self.heuristics_weight = heuristics_weight
+
     # Creates a new block
     def new_block(self):
         self.block = Block(3, 0, random.randint(0, len(shapes) - 1))
@@ -79,9 +80,10 @@ class Tetris:
     def next_block(self):
         self.nextBlock = Block(3, 0, random.randint(0, len(shapes) - 1))
 
-        next_move = GeneticTetris(self, heuristics_weight).next_move()
-        self.block.x = next_move[0]
-        self.block.rotation = next_move[1]
+        if self.heuristics_weight is not None:
+            next_move = GeneticTetris(self, self.heuristics_weight).next_move()
+            self.block.x = next_move[0]
+            self.block.rotation = next_move[1]
 
     # Checks if the blocks touch the top of the board
     def intersects(self):
@@ -139,7 +141,7 @@ class Tetris:
             self.block.y -= 1
             self.freeze()
 
-    # This function runs once the block reaches the bottom. 
+    # This function runs once the block reaches the bottom.
     def freeze(self):
         for i in range(4):
             for j in range(4):
@@ -166,11 +168,11 @@ class Tetris:
             self.block.rotation = old_rotation
 
 
-def startGame():
+def startGame(heuristics_weight):
     done = False
     clock = pygame.time.Clock()
     fps = 25
-    game = Tetris(20, 10)
+    game = Tetris(20, 10, heuristics_weight)
     counter = 0
 
     pressing_down = False
@@ -250,6 +252,7 @@ def startGame():
 
 
 if __name__ == '__main__':
+    heuristics_weight = [-3, 5.9, -3, -3, -2.8]
     pygame.font.init()
 
     screen = pygame.display.set_mode((width, height))
@@ -266,5 +269,5 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
-                startGame()
+                startGame(heuristics_weight)
     pygame.quit()

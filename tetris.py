@@ -4,6 +4,7 @@ import random
 
 from genetic_tetris import GeneticTetris
 
+heuristics_weight = [-3, 5.9, -3, -3, -2.8]
 # Shapes of the blocks
 shapes = [
     [[1, 5, 9, 13], [4, 5, 6, 7]],
@@ -78,7 +79,7 @@ class Tetris:
     def next_block(self):
         self.nextBlock = Block(3, 0, random.randint(0, len(shapes) - 1))
 
-        next_move = GeneticTetris(self).next_move()
+        next_move = GeneticTetris(self, heuristics_weight).next_move()
         self.block.x = next_move[0]
         self.block.rotation = next_move[1]
 

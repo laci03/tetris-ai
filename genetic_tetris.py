@@ -14,9 +14,10 @@ shapes = [
 
 
 class GeneticTetris:
-    def __init__(self, tetris):
+    def __init__(self, tetris, heuristics_weight):
         self.tetris = copy.deepcopy(tetris)
 
+        self.heuristics_weight = heuristics_weight
         self.all_fields = self.generate_all_moves()
 
     def generate_all_moves(self):
@@ -63,13 +64,11 @@ class GeneticTetris:
 
                         current_field = self.tetris.field
 
-                        heuristics_weight = [-3, 5.9, 0, -3, -3, -2.8]
-                        current_fitness = heuristics.max_height(current_field) * heuristics_weight[0] + \
-                                          heuristics.cleared_rows(current_field) * heuristics_weight[1] + \
-                                          heuristics.aggregate_height(current_field) * heuristics_weight[2] + \
-                                          heuristics.avg_height(current_field) * heuristics_weight[3] + \
-                                          heuristics.number_of_holes(current_field) * heuristics_weight[4] + \
-                                          heuristics.bumpiness(current_field) * heuristics_weight[5]
+                        current_fitness = heuristics.max_height(current_field) * self.heuristics_weight[0] + \
+                                          heuristics.cleared_rows(current_field) * self.heuristics_weight[1] + \
+                                          heuristics.avg_height(current_field) * self.heuristics_weight[2] + \
+                                          heuristics.number_of_holes(current_field) * self.heuristics_weight[3] + \
+                                          heuristics.bumpiness(current_field) * self.heuristics_weight[4]
 
                         all_fields.append(((tetris_x, rotation), copy.deepcopy(self.tetris.field), current_fitness))
 
@@ -119,7 +118,8 @@ if __name__ == '__main__':
 
     game.new_block()
     game.next_block()
+    heuristics_weight = [-3, 5.9, -3, -3, -2.8]
 
-    ai_agent = GeneticTetris(game)
+    ai_agent = GeneticTetris(game, heuristics_weight)
 
     print(ai_agent.next_move())

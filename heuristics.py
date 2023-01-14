@@ -26,10 +26,6 @@ def max_height(field):
 
 
 # source of the idea: https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/
-def aggregate_height(field):
-    return 0
-
-
 def avg_height(field):
     max_heights = [len(field) for _ in range(len(field[0]))]
     ones = [False for _ in range(len(field[0]))]

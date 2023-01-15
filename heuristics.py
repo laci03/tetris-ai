@@ -36,7 +36,23 @@ def avg_height(field):
                 ones[i] = True
             if not ones[i]:
                 max_heights[i] = max_heights[i] - 1
-    return np.mean(max_heights)
+    well = []
+
+    max_heights_len = len(max_heights)
+    for i in range(max_heights_len):
+        if i == 0:
+            m = max_heights[i+1]
+        elif i == (max_heights_len - 1):
+            m = max_heights[i - 1]
+        else:
+            m = min(max_heights[i - 1], max_heights[i + 1])
+
+        if max_heights[i] < m:
+            well.append(m - max_heights[i])
+        else:
+            well.append(0)
+
+    return np.max(well), np.mean(max_heights)
 
 
 def number_of_holes(field):

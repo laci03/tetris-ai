@@ -39,7 +39,7 @@ class Block:
         self.y = y
         self.type = n
         self.color = n + 1
-        self.rotation = rotation # random.randint(0, len(shapes[n]) - 1)
+        self.rotation = rotation  # random.randint(0, len(shapes[n]) - 1)
 
     def image(self):
         return shapes[self.type][self.rotation]
@@ -131,7 +131,7 @@ class Tetris:
         while not self.intersects():
             self.block.y += 1
         self.block.y -= 1
-        print(self.block.x)
+        # print(self.block.x)
         self.freeze()
 
     # Moves the block down by a unit
@@ -207,7 +207,7 @@ def startGame(heuristics_weight):
                 if event.key == pygame.K_SPACE:
                     game.moveBottom()
                 if event.key == pygame.K_ESCAPE:
-                    game.__init__(20, 10)
+                    game.__init__(20, 10, heuristics_weight)
 
         screen.fill('#FFFFFF')
 

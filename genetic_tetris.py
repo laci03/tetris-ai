@@ -22,7 +22,7 @@ class GeneticTetris:
 
     def generate_all_moves(self):
         all_fields = []
-        print('block type: {}, next_block type: {}'.format(self.tetris.block.type, self.tetris.nextBlock.type))
+        # print('block type: {}, next_block type: {}'.format(self.tetris.block.type, self.tetris.nextBlock.type))
 
         possibilities = 0
         initial_field = copy.deepcopy(self.tetris.field)
@@ -72,7 +72,7 @@ class GeneticTetris:
 
                         all_fields.append(((tetris_x, rotation), copy.deepcopy(self.tetris.field), current_fitness))
 
-        print('total number of maps: {}'.format(possibilities))
+        # print('total number of maps: {}'.format(possibilities))
 
         return all_fields
 

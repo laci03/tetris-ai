@@ -252,7 +252,8 @@ def startGame(heuristics_weight):
 
 
 if __name__ == '__main__':
-    heuristics_weight = [-3, 5.9, -3, -3, -2.8]
+    heuristics_weight = [-0.46665422808694035, 0.9393567147255506, -0.703588547916097, 0.06837667624910071,
+                         0.37300450972436067]
     pygame.font.init()
 
     screen = pygame.display.set_mode((width, height))

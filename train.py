@@ -8,6 +8,9 @@ import numpy as np
 from tetris import Tetris
 from tqdm import tqdm
 
+import multiprocessing
+import time
+
 
 def init_chromosome(ch_length):
     return [random.uniform(-1, 1),  # max_height weight
@@ -47,8 +50,23 @@ def crossover(chromosome_1, chromosome_2):
     return new_chromosome_1, new_chromosome_2
 
 
+def play_the_game(chromosome, number_of_moves, random_seed):
+    random.seed(random_seed)
+    moves = 0
+    tetris_game = Tetris(20, 10, chromosome)
+
+    tetris_game.new_block()
+    tetris_game.next_block()
+
+    while tetris_game.state == 'start' and moves < number_of_moves:
+        tetris_game.moveBottom()
+        moves += 1
+
+    return tetris_game.score, moves
+
+
 def main(number_of_moves, number_of_generations, population_size, ch_length, mutation_prob, elitism_perc,
-         output_folder):
+         output_folder, pool_size):
     # create output folder
     os.makedirs(output_folder, exist_ok=True)
 
@@ -61,24 +79,17 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
     aux_distribution = aux_scores / np.sum(aux_scores)
 
     for generation in range(number_of_generations):
+        print('generation: {}'.format(generation))
+        st = time.time()
         random_seed = random.randint(0, 1000000)
-        scores = []
-        moves_array = []
 
-        for chromosome in tqdm(chromosomes, desc='Generation: {}'.format(generation)):
-            random.seed(random_seed)  # select a random seed so each chromosome will play the same game
-            tetris_game = Tetris(20, 10, chromosome)
-            moves = 0
+        pool = multiprocessing.Pool(pool_size)
 
-            tetris_game.new_block()
-            tetris_game.next_block()
-
-            while tetris_game.state == 'start' and moves <= number_of_moves:
-                tetris_game.moveBottom()
-                moves += 1
-
-            scores.append(tetris_game.score)
-            moves_array.append(moves)
+        processes = [pool.apply_async(play_the_game, args=(chromosome, number_of_moves, random_seed)) for chromosome in
+                     chromosomes]
+        result = [p.get() for p in processes]
+        scores = [x[0] for x in result]
+        moves_array = [x[1] for x in result]
 
         # sort the chromosomes based on their achieved score
         chromosomes_scores = list(zip(scores, chromosomes, moves_array))
@@ -96,6 +107,9 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
         # the first elitism_perc will go automatically in the new generation
         new_chromosomes = [chromosome[1] for chromosome in
                            chromosomes_scores[:int(len(chromosomes_scores) * elitism_perc)]]
+
+        # aux_scores = [x[0] + 1 for x in chromosomes_scores]
+        # aux_distribution = aux_scores / np.sum(aux_scores)
 
         # for the rest, we randomly select 2 paraets and do cross over
         new_population_size = len(new_chromosomes)
@@ -115,6 +129,8 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
         # for each chromosome we add also mutation
         chromosomes = [mutate_chromosome(new_chromosome, mutation_prob) for new_chromosome in
                        new_chromosomes[:population_size]]
+
+        print('Elapsed time: {} s'.format(time.time() - st))
 
 
 def get_args():
@@ -138,6 +154,9 @@ def get_args():
     parser.add_argument('--output_folder', type=str, default='./models',
                         help='the folder where the models should be saved')
 
+    parser.add_argument('--pool_size', type=int, default=16,
+                        help='the pool size for multiprocessing')
+
     return vars(parser.parse_args())
 
 
@@ -145,4 +164,5 @@ if __name__ == '__main__':
     args = get_args()
 
     main(args['number_of_moves'], args['number_of_generations'], args['population_size'],
-         args['ch_length'], args['mutation_prob'], args['elitism_perc'], args['output_folder'])
+         args['ch_length'], args['mutation_prob'], args['elitism_perc'], args['output_folder'],
+         args['pool_size'])

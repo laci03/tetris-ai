@@ -2,3 +2,5 @@ numpy
 pygame
 pandas
 tqdm
+notebooks
+matplotlib

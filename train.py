@@ -33,18 +33,21 @@ def mutate_chromosome(chromosome, mutation_prob):
 def crossover(chromosome_1, chromosome_2):
     if random.uniform(0, 1) < 0.05:  # 5 percentage probability to copy the parents as they are in the new generation
         return chromosome_1, chromosome_2
-    elif random.uniform(0, 1) < 0.5:
+
+    while True:
         crossover_perc = [random.uniform(0, 1) for _ in chromosome_1]
+        if any([x >= 0.5 for x in crossover_perc]):
+            break
+
+    if random.uniform(0, 1) < 0.5:
         new_chromosome_1 = [x if cr_p < 0.5 else y for x, y, cr_p in
                             zip(chromosome_1, chromosome_2, crossover_perc)]
-        new_chromosome_2 = [y if cr_p >= 0.5 else x for x, y, cr_p in
+        new_chromosome_2 = [y if cr_p < 0.5 else x for x, y, cr_p in
                             zip(chromosome_1, chromosome_2, crossover_perc)]
     else:   # n point crossover
-        crossover_perc = [random.uniform(0, 1) for _ in chromosome_1]
-
         new_chromosome_1 = [x if cr_p < 0.5 else (x + y) / 2 for x, y, cr_p in
                             zip(chromosome_1, chromosome_2, crossover_perc)]
-        new_chromosome_2 = [y if cr_p >= 0.5 else (x + y) / 2 for x, y, cr_p in
+        new_chromosome_2 = [y if cr_p < 0.5 else (x + y) / 2 for x, y, cr_p in
                             zip(chromosome_1, chromosome_2, crossover_perc)]
 
     return new_chromosome_1, new_chromosome_2
@@ -74,7 +77,8 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
     chromosomes = [init_chromosome(ch_length) for _ in range(population_size)]
 
     aux_len = population_size
-    aux_scores = [1.003 ** (aux_len - i) for i in range(aux_len)]
+    # aux_scores = [1.003 ** (aux_len - i) for i in range(aux_len)]
+    aux_scores = [np.log2(aux_len - i) for i in range(aux_len)]
     # aux_scores = [1.1 ** (aux_len - i) for i in range(aux_len)]
     aux_distribution = aux_scores / np.sum(aux_scores)
 
@@ -93,7 +97,7 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
 
         # sort the chromosomes based on their achieved score
         chromosomes_scores = list(zip(scores, chromosomes, moves_array))
-        chromosomes_scores = sorted(chromosomes_scores, key=lambda x: x[0], reverse=True)
+        chromosomes_scores = sorted(chromosomes_scores, key=lambda x: (x[0], x[2]), reverse=True)
 
         # save the generation with their achieved score and each genome move
         df = pd.DataFrame([x[1] for x in chromosomes_scores],

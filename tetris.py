@@ -95,7 +95,7 @@ class Tetris:
                             j + self.block.x > self.width - 1 or \
                             j + self.block.x < 0 or \
                             self.field[i + self.block.y][j + self.block.x] > 0:
-                        intersection = True
+                        return True
         return intersection
 
     # Checks if a row is formed and destroys that line
@@ -108,9 +108,10 @@ class Tetris:
                     zeros += 1
             if zeros == 0:
                 lines += 1
-                for i1 in range(i, 1, -1):
+                for i1 in range(i, 0, -1):
                     for j in range(self.width):
                         self.field[i1][j] = self.field[i1 - 1][j]
+                self.field[0] = [0 for _ in range(self.width)]
         self.score += lines ** 2
 
     def draw_next_block(self, screen):

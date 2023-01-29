@@ -18,7 +18,8 @@ def init_chromosome(ch_length):
             random.uniform(-1, 1),  # avg_height weight
             random.uniform(-1, 1),  # number_of_holes weight
             random.uniform(-1, 1),  # bumpiness weight
-            random.uniform(-1, 1)  # deepest well weight
+            random.uniform(-1, 1),  # deepest well weight
+            random.uniform(-1, 1)  # game over
             ]
 
 
@@ -101,7 +102,7 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
 
         # save the generation with their achieved score and each genome move
         df = pd.DataFrame([x[1] for x in chromosomes_scores],
-                          columns=['max_height', 'cleared_rows', 'avg_height', 'number_of_holes', 'bumpiness', 'deepest_well'])
+                          columns=['max_height', 'cleared_rows', 'avg_height', 'number_of_holes', 'bumpiness', 'deepest_well', 'game_over'])
         df['score'] = [x[0] for x in chromosomes_scores]
         df['moves'] = [x[2] for x in chromosomes_scores]
 

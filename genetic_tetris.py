@@ -44,6 +44,8 @@ class GeneticTetris:
 
                 # print('rotation {}, tetris_x {}'.format(rotation, tetris_x))
 
+                first_intersects = self.tetris.intersects()
+
                 self.generate_field()
                 next_field = copy.deepcopy(self.tetris.field)
 
@@ -60,6 +62,8 @@ class GeneticTetris:
                         self.tetris.block.type = self.tetris.nextBlock.type
                         self.tetris.block.rotation = next_rotation
 
+                        second_intersects = self.tetris.intersects()
+
                         self.generate_field()
 
                         current_field = self.tetris.field
@@ -70,7 +74,8 @@ class GeneticTetris:
                                           avg_height * self.heuristics_weight[2] + \
                                           heuristics.number_of_holes(current_field) * self.heuristics_weight[3] + \
                                           heuristics.bumpiness(current_field) * self.heuristics_weight[4] + \
-                                          deepest_well * self.heuristics_weight[5]
+                                          deepest_well * self.heuristics_weight[5] + \
+                                          (first_intersects or second_intersects) * self.heuristics_weight[6]
 
                         all_fields.append(((tetris_x, rotation), copy.deepcopy(self.tetris.field), current_fitness))
 

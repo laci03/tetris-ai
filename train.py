@@ -69,13 +69,21 @@ def play_the_game(chromosome, number_of_moves, random_seed):
     return tetris_game.score, moves
 
 
-def main(number_of_moves, number_of_generations, population_size, ch_length, mutation_prob, elitism_perc,
+def main(number_of_moves, checkpoint, number_of_generations, population_size, ch_length, mutation_prob, elitism_perc,
          output_folder, pool_size):
     # create output folder
     os.makedirs(output_folder, exist_ok=True)
 
     # init chromosomes
     chromosomes = [init_chromosome(ch_length) for _ in range(population_size)]
+    start_generation = 0
+
+    if checkpoint is not None:
+        chromosomes = pd.read_csv(checkpoint, index_col=0).values[:, :ch_length]
+
+        start_generation = int(checkpoint.split('_')[2]) + 1
+
+        print('checkpoint {} resumed'.format(checkpoint))
 
     aux_len = population_size
     # aux_scores = [1.003 ** (aux_len - i) for i in range(aux_len)]
@@ -83,7 +91,7 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
     # aux_scores = [1.1 ** (aux_len - i) for i in range(aux_len)]
     aux_distribution = aux_scores / np.sum(aux_scores)
 
-    for generation in range(number_of_generations):
+    for generation in range(start_generation, number_of_generations, 1):
         print('generation: {}'.format(generation))
         st = time.time()
         random_seed = random.randint(0, 1000000)
@@ -133,7 +141,7 @@ def main(number_of_moves, number_of_generations, population_size, ch_length, mut
 
         # for each chromosome we add also mutation
         chromosomes = [mutate_chromosome(new_chromosome, mutation_prob) for new_chromosome in
-                       new_chromosomes[:population_size]]
+                       new_chromosomes]
 
         print('Elapsed time: {} s'.format(time.time() - st))
 
@@ -143,9 +151,13 @@ def get_args():
 
     parser.add_argument('--number_of_generations', type=int, default=1000,
                         help='the number of generations that the algorithm should be trained')
-    parser.add_argument('--population_size', type=int, default=40,
+
+    parser.add_argument('--checkpoint', type=str, default=None,
+                        help='from where to resume the model')
+
+    parser.add_argument('--population_size', type=int, default=100,
                         help='the size of the population that each generation should contain')
-    parser.add_argument('--ch_length', type=int, default=5,
+    parser.add_argument('--ch_length', type=int, default=7,
                         help='the length of the chromosome')
     parser.add_argument('--mutation_prob', type=float, default=0.05,
                         help='the probability of a mutation')
@@ -156,7 +168,7 @@ def get_args():
     parser.add_argument('--elitism_perc', type=float, default=0.1,
                         help='the percentage of top chromosomes that we move into the next generation')
 
-    parser.add_argument('--output_folder', type=str, default='./models',
+    parser.add_argument('--output_folder', type=str, default='./exp_1',
                         help='the folder where the models should be saved')
 
     parser.add_argument('--pool_size', type=int, default=16,
@@ -168,6 +180,6 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
 
-    main(args['number_of_moves'], args['number_of_generations'], args['population_size'],
+    main(args['number_of_moves'], args['checkpoint'], args['number_of_generations'], args['population_size'],
          args['ch_length'], args['mutation_prob'], args['elitism_perc'], args['output_folder'],
          args['pool_size'])

@@ -25,15 +25,16 @@ def init_chromosome(ch_length):
 
 def mutate_chromosome(chromosome, mutation_prob):
     # reset mutation with a probability of mutation_prob
-    if random.uniform(0, 1) < 0.5:
-        return [x if random.uniform(0, 1) > mutation_prob else random.uniform(-1, 1) for x in chromosome]
-    else:
-        return [x if random.uniform(0, 1) > mutation_prob else x + random.uniform(-0.1, 0.1) for x in chromosome]
+    return [x if random.uniform(0, 1) > mutation_prob else random.uniform(-1, 1) for x in chromosome]
+    # if random.uniform(0, 1) < 0.5:
+    #     return [x if random.uniform(0, 1) > mutation_prob else random.uniform(-1, 1) for x in chromosome]
+    # else:
+    #     return [x if random.uniform(0, 1) > mutation_prob else x + random.uniform(-0.5, 0.5) for x in chromosome]
 
 
 def crossover(chromosome_1, chromosome_2):
-    if random.uniform(0, 1) < 0.05:  # 5 percentage probability to copy the parents as they are in the new generation
-        return chromosome_1, chromosome_2
+    # if random.uniform(0, 1) < 0.05:  # 5 percentage probability to copy the parents as they are in the new generation
+    #     return chromosome_1, chromosome_2
 
     while True:
         crossover_perc = [random.uniform(0, 1) for _ in chromosome_1]
@@ -87,7 +88,7 @@ def main(number_of_moves, checkpoint, number_of_generations, population_size, ch
 
     aux_len = population_size
     # aux_scores = [1.003 ** (aux_len - i) for i in range(aux_len)]
-    aux_scores = [np.log2(aux_len - i) for i in range(aux_len)]
+    aux_scores = [np.log2(aux_len - i) * (aux_len - i) for i in range(aux_len)]
     # aux_scores = [1.1 ** (aux_len - i) for i in range(aux_len)]
     aux_distribution = aux_scores / np.sum(aux_scores)
 
